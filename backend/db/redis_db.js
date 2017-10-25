@@ -44,22 +44,27 @@ const redis_db = {
         }
     },
 
-    deleteUser: (id) => new Promise(
-        (resolve, reject) => RedisPromise.del(id).then(
-            (res) => res === 1 ? 
-                resolve(db_make_status(db_operation.DELETE_USER, true, db_message.USER_DELETED)) :
-                resolve(db_make_status(db_operation.DELETE_USER, false, db_message.USER_NOT_DELETED)),
-            (err) => reject(db_make_status(db_operation.DELETE_USER, false, db_message.DB_FAILED))
-        )
-    )
+    deleteUser: async(id) => {
+        try {
+            const res = await RedisPromise.del(id);
+            return res === 1 ?
+                db_make_status(db_operation.DELETE_USER, true, db_message.USER_DELETED) :
+                db_make_status(db_operation.DELETE_USER, false, db_message.USER_NOT_DELETED)
+
+        } catch (error) {
+            return db_make_status(db_operation.EXIST_USER, false, db_message.DB_FAILED)
+        }
+    }
 }
 
 module.exports = redis_db;
-redis_db.existUser(12).then(console.log)
+//redis_db.existUser(12).then(console.log)
 //redis_db.findUser(115637759064460931723).then(console.log, console.log);
 //redis_db.findUser(115637759064460931723).then(console.log, console.log);
 //redis_db.existUser(13).then(console.log, console.log)
-//redis_db.addUser(12, "dsdjsk", "test@te.st", "Test").then(console.log, console.log)
-//redis_db.findUser(12).then(console.log, console.log)
+redis_db.addUser(131, "dsdjsk", "test@te.st", "Test").then(console.log)
+redis_db.findUser(131).then(console.log)
+redis_db.deleteUser(131).then(console.log)
+redis_db.findUser(131).then(console.log)
 //redis_db.existUser(12).then(console.log, console.log)
 //redis_db.addUser()
