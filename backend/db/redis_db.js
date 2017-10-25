@@ -33,37 +33,16 @@ const redis_db = {
             return db_make_status(db_operation.ADD_USER, false, db_message.DB_FAILED)
         }
     },
-    /*
-    findUser: (id) => new Promise(
-        (resolve, reject) => RedisPromise.hgetall(id).then(
-            (res) => res !== null ? resolve(db_make_status(db_operation.FIND_USER, true, res)) : 
-                resolve(db_make_status(db_operation.FIND_USER, false, db_message.USER_NOT_EXIST)),
-            (err) => reject(db_make_status(db_operation.FIND_USER, false, db_message.DB_FAILED))
-        )
-    ),
-    
-    addUser: (id, token, email, name) => new Promise(
-        (resolve, reject) => RedisPromise.hmset(id, {
-            'google-id': id,
-            'google-token': token,
-            'google-email': email,
-            'google-name': name
-        }).then(
-            (res) => res === 'OK'? 
-                resolve(db_make_status(db_operation.ADD_USER, true, db_message.USER_ADD)) :
-                resolve(db_make_status(db_operation.ADD_USER, false, db_message.USER_NOT_ADD)),
-            (err) => reject(db_make_status(db_operation.ADD_USER, false, db_message.DB_FAILED))
-        )
-    ),
-    */
-    existUser: (id) => new Promise(
-        (resolve, reject) => RedisPromise.exist(id).then(
-            (res) => res === 1 ? 
-                resolve(db_make_status(db_operation.EXIST_USER, true, db_message.USER_EXIST)) :
-                resolve(db_make_status(db_operation.EXIST_USER, false, db_message.USER_NOT_EXIST)),
-            (err) => reject(db_make_status(db_operation.EXIST_USER, false, db_message.USER_NOT_EXIST))
-        )
-    ),
+    existUser: async (id) => {
+        try {
+            const res = await RedisPromise.exist(id);
+            return res === 1 ?
+                db_make_status(db_operation.EXIST_USER, true, db_message.USER_EXIST) :
+                db_make_status(db_operation.EXIST_USER, false, db_message.USER_NOT_EXIST)
+        } catch (error) {
+            return db_make_status(db_operation.EXIST_USER, false, db_message.DB_FAILED)
+        }
+    },
 
     deleteUser: (id) => new Promise(
         (resolve, reject) => RedisPromise.del(id).then(
@@ -76,6 +55,7 @@ const redis_db = {
 }
 
 module.exports = redis_db;
+redis_db.existUser(12).then(console.log)
 //redis_db.findUser(115637759064460931723).then(console.log, console.log);
 //redis_db.findUser(115637759064460931723).then(console.log, console.log);
 //redis_db.existUser(13).then(console.log, console.log)
