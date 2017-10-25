@@ -1,0 +1,56 @@
+version: '2'
+services:
+  kupizapchasti:
+    build: ./backend
+    container_name: kz_backend
+    volumes:
+      - ./backend:/usr/src/app
+    ports:
+      - "8080:8080"
+    links:
+      - "mongo:mongo"
+      - "redis:redis"
+      - "mysql:mysql"
+    env_file:
+      - ./backend/env/web-variables.env
+    depends_on:
+      - mongo
+      - mysql
+      - redis
+    command: npm start
+  nginx:
+    restart: always
+    container_name: kz_nginx
+    build: ./nginx
+    links: 
+      - kupizapchasti
+    ports:
+      - "80:80"
+    depends_on:
+      - kupizapchasti
+  mongo:
+    image: mongo
+    restart: always
+    container_name: kz_mongo 
+    ports:
+      - "27020:27017"
+    volumes:
+      - "./mongo/db:/data/db"
+  redis:
+    image: redis
+    restart: always
+    container_name: kz_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - "./redis:/var/lib/redis"
+  mysql:
+    image: mysql
+    container_name: kz_mysql
+    restart: always
+    env_file:
+      - "./backend/env/mysql.env"
+    ports:
+      - "8936:3306"
+    volumes:
+      - "./mysql/db:/var/lib/mysql"
