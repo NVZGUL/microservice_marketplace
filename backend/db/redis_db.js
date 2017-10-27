@@ -18,11 +18,10 @@ const redis_db = {
         
     },
 
-    addUser: async (id, token, email, name) => {
+    addUser: async (id, email, name) => {
         try {
             const res = await RedisPromise.hmset(id, {
                 'google-id': id,
-                'google-token': token,
                 'google-email': email,
                 'google-name': name
             })
@@ -33,6 +32,7 @@ const redis_db = {
             return db_make_status(db_operation.ADD_USER, false, db_message.DB_FAILED)
         }
     },
+
     existUser: async (id) => {
         try {
             const res = await RedisPromise.exist(id);
@@ -59,12 +59,11 @@ const redis_db = {
 
 module.exports = redis_db;
 //redis_db.existUser(12).then(console.log)
-//redis_db.findUser(115637759064460931723).then(console.log, console.log);
-//redis_db.findUser(115637759064460931723).then(console.log, console.log);
+//redis_db.findUser(113).then(console.log, console.log);
 //redis_db.existUser(13).then(console.log, console.log)
-redis_db.addUser(131, "dsdjsk", "test@te.st", "Test").then(console.log)
-redis_db.findUser(131).then(console.log)
-redis_db.deleteUser(131).then(console.log)
-redis_db.findUser(131).then(console.log)
+//redis_db.addUser(131, "dsdjsk", "test@te.st", "Test").then(console.log)
+//redis_db.findUser(131).then(console.log)
+//redis_db.deleteUser(131).then(console.log)
+//redis_db.findUser(131).then(console.log)
 //redis_db.existUser(12).then(console.log, console.log)
 //redis_db.addUser()
