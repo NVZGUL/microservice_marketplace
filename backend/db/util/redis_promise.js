@@ -1,8 +1,11 @@
 const redis = require('redis');
 const Promise = require('promise');
-const client = redis.createClient(6379, 'redis');
+const client = redis.createClient(process.env.REDIS_PORT, 
+    process.env.REDIS_HOST, 
+    {password: process.env.REDIS_PASSWORD}
+);
 
-client.on('connect', () => console.log('redis connected'));
+client.on('connect', () => console.log('redis connected on ' + process.env.REDIS_PORT));
 
 const RedisPromise = {
     // redis hgetall
