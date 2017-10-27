@@ -17,48 +17,35 @@ const passportConf = (passport) => {
             return done(error);
         }
     })
-    /*
-    passport.deserializeUser((id, done) => redis_db.findUser(id).done(
-        (res) => res.msg !== db_message.USER_NOT_EXIST ? done(null, res.msg) : done(null, false),
-        (err) => done(err)
-    ));
-    */
+  
     passport.use(new GoogleStrategy({
             clientID: process.env.GOOGLE_AUTH_ID,
             clientSecret: process.env.GOOGLE_AUTH_SECRET,
             callbackURL: "/auth/google/callback"
         }, 
         (req, accessToken, refreshToken, profile, done) => {
-            process.nextTick(() => {
+            process.nextTick(async () => {
                 if(!req.user) {
-                    redis_db.findUser(profile.id).then(
-                        (res_find) => {
-                            if(res_find.success && res_find.msg !== db_message.USER_NOT_EXIST) {
-                                redis_db.addUser(
-                                    profile.id,
-                                    accessToken,
-                                    profile.emails[0].value.toLowerCase(),
-                                    profile.displayName
-                                ).then(
-                                    (res_add) => 
-                                        res_add.success && res_add.msg === db_message.USER_ADD ? 
-                                            redis_db.findUser(profile.id).then(
-                                                (res_find) => done(null, res_find.msg)
-                                            ) : done(res_make.msg)
-                                    ,
-                                    (err_add) => done(err_add.msg)
-                                );
-                            }
-                            else done(null, false)
-                        },
-                        (err_find) => done(err_find.msg)
-                    )
+                    try {
+                        const data = await redis_db.findUser(profile.id);
+                        if (data.success && data.msg != db_message.USER_NOT_EXIST) {
+                            const data2 = await redis_db.addUser(
+                                profile.id,
+                                profile.emails[0].value.toLowerCase(),
+                                profile.displayName);
+                            const data3 = await redis_db.findUser(profile.id);
+                            return done(null, data3.msg)
+                        } else 
+                            return done(null, false)
+                            
+                    } catch (error) {
+                        done(error.msg)
+                    }
                 }
                 // user logined
                 else {
                     redis_db.addUser(
                         profile.id,
-                        accessToken,
                         profile.emails[0].value.toLowerCase(),
                         profile.displayName
                     ).then(
