@@ -44,8 +44,6 @@ services:
       - "6379:6379"
     volumes:
       - "./redis:/var/lib/redis"
-    env_file:
-      - "./backend/env/redis.env"
   mysql:
     image: mysql
     container_name: kz_mysql
@@ -56,3 +54,4 @@ services:
       - "8936:3306"
     volumes:
       - "./mysql/db:/var/lib/mysql"
+      - "./conf/init.sql:/docker-entrypoint-initdb.d/init.sql"
