@@ -4,6 +4,7 @@ const ensureAuth = (req, res, next) => {
   if (!(req.headers && req.headers.authorization)) {
     const err = new Error('Unauthorized');
     err.status = 401;
+    err.description = 'Please Log In';
     return next(err);
   }
   const options = {
