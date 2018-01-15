@@ -1,8 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
-// const session = require('express-session');
-// const MysqlStore = require('connect-mysql')(session);
 const routes = require('./routes');
 
 const app = express();
