@@ -36,3 +36,39 @@ describe('POST /details', () => {
       });
   });
 });
+
+describe('GET /details/search?q=param', () => {
+  it('should get all data which contains param', (done) => {
+    chai.request(server)
+      .get('/details/search?q=pzram')
+      .end((err, res) => {
+        res.status.should.equal(200);
+        res.type.should.equal('application/json');
+        done();
+      });
+  });
+});
+
+describe('GET /details', () => {
+  it('should get details list', (done) => {
+    chai.request(server)
+      .get('/details')
+      .end((err, res) => {
+        res.status.should.equal(200);
+        res.type.should.equal('application/json');
+        done();
+      });
+  });
+});
+
+describe('GET /details/:id', () => {
+  it('should get detail information about auto detail', (done) => {
+    chai.request(server)
+      .get('/details/id')
+      .end((err, res) => {
+        res.status.should.equal(200);
+        res.type.should.equal('application/json');
+        done();
+      });
+  });
+});
