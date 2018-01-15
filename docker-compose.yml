@@ -51,6 +51,8 @@ services:
       - './services/admin-auth/package.json:/usr/src/package'
     ports:
       - '3030:3030'
+    env_file:
+      - './env/details-catalog/node.env'
     depends_on:
       details-catalog__db:
         condition: service_healthy
