@@ -1,57 +1,69 @@
-version: '2'
+version: '2.1'
 services:
-  kupizapchasti:
-    build: ./backend
-    container_name: kz_backend
+  admin-auth:
+    container_name: kz__admin-auth
+    build: ./services/admin-auth
     volumes:
-      - ./backend:/usr/src/app
+      - './services/admin-auth:/usr/src/app'
+      - './services/admin-auth/package.json:/usr/src/package'
     ports:
-      - "8080:8080"
-    links:
-      - "mongo:mongo"
-      - "redis:redis"
-      - "mysql:mysql"
+      - '3000:3000'
     env_file:
-      - ./backend/env/web-variables.env
+      - './env/admin-auth/node.env'
     depends_on:
-      - mongo
-      - mysql
+      redis:
+        condition: service_started
+    links:
       - redis
-    command: npm start
-  nginx:
-    restart: always
-    container_name: kz_nginx
-    build: ./nginx
-    links: 
-      - kupizapchasti
-    ports:
-      - "80:80"
-    depends_on:
-      - kupizapchasti
-  mongo:
-    image: mongo
-    restart: always
-    container_name: kz_mongo 
-    ports:
-      - "27020:27017"
+  admin-web:
+    container_name: kz__admin-web
+    build: ./services/web-admin
     volumes:
-      - "./mongo/db:/data/db"
+      - './services/web-admin:/usr/src/app'
+      - '/usr/src/app/node_modules'
+    ports:
+      - '3007:3007'
+    env_file:
+      - './env/admin-web/web.env'
+    depends_on:
+      admin-auth:
+        condition: service_started
+      details-catalog:
+        condition: service_started
+    links:
+      - admin-auth
+      - details-catalog
+  details-catalog__db:
+    container_name: kz__details-catalog__db
+    restart: always
+    build: ./services/details-catalog/src/db
+    ports: 
+      - '5433:5432'
+    env_file:
+      - './env/details-catalog/pg.env'
+    healthcheck:
+      test: exit 0
+  details-catalog:
+    container_name: kz__details-catalog
+    build: ./services/details-catalog
+    volumes:
+      - './services/details-catalog:/usr/src/app'
+      - './services/admin-auth/package.json:/usr/src/package'
+    ports:
+      - '3030:3030'
+    depends_on:
+      details-catalog__db:
+        condition: service_healthy
+    links:
+      - details-catalog__db
+      - admin-auth
   redis:
+    container_name: redis__test
     image: redis
     restart: always
-    container_name: kz_redis
     ports:
-      - "6379:6379"
-    volumes:
-      - "./redis:/var/lib/redis"
-  mysql:
-    image: mysql
-    container_name: kz_mysql
-    restart: always
+      - '6379:6379'
     env_file:
-      - "./backend/env/mysql.env"
-    ports:
-      - "8936:3306"
+      - './env/redis.env'
     volumes:
-      - "./mysql/db:/var/lib/mysql"
-      - "./conf/init.sql:/docker-entrypoint-initdb.d/init.sql"
+      - "./services/admin-auth/redis:/var/lib/redis"

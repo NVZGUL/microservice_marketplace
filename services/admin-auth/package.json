@@ -1,0 +1,44 @@
+{
+  "name": "admin-auth",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "gulp --gulpfile app/gulpfile.js",
+    "test": "./node_modules/mocha/bin/_mocha 'app/tests/**/*.test.js'"
+  },
+  "author": "Slava Povzhnuk",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.18.2",
+    "connect-mysql": "^2.1.6",
+    "connect-redis": "^3.3.2",
+    "cookie-parser": "^1.4.3",
+    "debug": "^3.1.0",
+    "dotenv": "^4.0.0",
+    "express": "^4.16.2",
+    "express-session": "^1.15.6",
+    "jwt-simple": "^0.5.1",
+    "knex": "^0.14.2",
+    "moment": "^2.19.2",
+    "morgan": "^1.9.0",
+    "mysql": "^2.15.0",
+    "passport": "^0.4.0",
+    "passport-google-oauth20": "^1.0.0",
+    "promise": "^8.0.1",
+    "randomstring": "^1.1.5",
+    "redis": "^2.8.0",
+    "twilio": "^3.11.0"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-http": "^3.0.0",
+    "eslint": "^4.12.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0",
+    "gulp": "^3.9.1",
+    "gulp-eslint": "^4.0.0",
+    "gulp-nodemon": "^2.2.1",
+    "mocha": "^4.0.1"
+  }
+}

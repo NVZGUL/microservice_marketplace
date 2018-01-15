@@ -55,10 +55,10 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
-backend/env
+env/
+conf/
 
 # bd data
-mysql/
 mongo/
 redis/
- 
+postgres/
