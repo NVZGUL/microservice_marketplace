@@ -4,11 +4,24 @@ const path = require('path');
 const multer = require('multer');
 const xlsx = require('node-xlsx');
 const routeHelpers = require('./_helpers');
+const pg = require('../../utils/pg');
 
 const router = express.Router();
 /* eslint-disable */
 
-router.get('/', (req, res) => res.status(200).json({ test: 'OK' }));
+router.get('/', (req, res, next) => {
+    return pg('test').test().then(data => res.json(data)).catch(err => next(err));  
+});
+
+// get detail information about parts
+router.get('/:id', (req, res, next) => {
+    res.json({msg:'get detail'});
+});
+
+// http://example.com/search?q=some_string
+router.get('/search', (req, res, next) => {
+    res.json({msg: 'search'});
+});
 
 const storage = multer.diskStorage({
   destination: './public/uploads',
