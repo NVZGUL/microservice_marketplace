@@ -76,4 +76,8 @@ const redis_db = {
     }
 }
 
+if (process.env.NODE_ENV === 'test') {
+    redis_db.addUser(1, 'test@test.com', 'test', '+19999999');
+}
+
 module.exports = redis_db;
