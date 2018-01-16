@@ -28,7 +28,7 @@ app.use((req, res, next) => {
 });
 
 /* eslint-disable no-unused-vars */
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
   const message = req.app.get('env') === 'development' ? err : {};
   res.status(err.status || 500);
   res.json({
