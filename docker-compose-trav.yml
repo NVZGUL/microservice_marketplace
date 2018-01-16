@@ -1,0 +1,86 @@
+version: '2.1'
+services:
+  admin-auth:
+    container_name: kz__admin-auth
+    build: ./services/admin-auth
+    volumes:
+      - './services/admin-auth:/usr/src/app'
+      - './services/admin-auth/package.json:/usr/src/package'
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - TOKEN_SECRET=${TOKEN_SECRET}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - GOOGLE_AUTH_ID=${GOOGLE_AUTH_ID}
+      - GOOGLE_AUTH_SECRET=${GOOGLE_AUTH_SECRET}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - PHONE_FROM=${PHONE_FROM}
+      - ACCOUNT_SID=${ACCOUNT_SID}
+      - AUTH_TOKEN=${AUTH_TOKEN}
+    depends_on:
+      redis:
+        condition: service_started
+    links:
+      - redis
+  admin-web:
+    container_name: kz__admin-web
+    build: ./services/web-admin
+    volumes:
+      - './services/web-admin:/usr/src/app'
+      - '/usr/src/app/node_modules'
+    ports:
+      - '3007:3007'
+    environment:
+      - REACT_APP_USERS_SERVICE_URL=${REACT_APP_USERS_SERVICE_URL}
+      - REACT_APP_DETAILS_SERVICE_URL=${REACT_APP_DETAILS_SERVICE_URL}
+      - REACT_APP_GOOGLE_CLIENT_ID=${REACT_APP_GOOGLE_CLIENT_ID}
+    depends_on:
+      admin-auth:
+        condition: service_started
+      details-catalog:
+        condition: service_started
+    links:
+      - admin-auth
+      - details-catalog
+  details-catalog__db:
+    container_name: kz__details-catalog__db
+    restart: always
+    build: ./services/details-catalog/src/db
+    ports: 
+      - '5433:5432'
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    healthcheck:
+      test: exit 0
+  details-catalog:
+    container_name: kz__details-catalog
+    build: ./services/details-catalog
+    volumes:
+      - './services/details-catalog:/usr/src/app'
+      - './services/admin-auth/package.json:/usr/src/package'
+    ports:
+      - '3030:3030'
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - DB_CONNECT_DEV=${DB_CONNECT_DEV}
+      - DB_CONNECT_TEST=${DB_CONNECT_TEST}
+    depends_on:
+      details-catalog__db:
+        condition: service_healthy
+    links:
+      - details-catalog__db
+      - admin-auth
+  redis:
+    container_name: redis__test
+    image: redis
+    restart: always
+    ports:
+      - '6379:6379'
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+    volumes:
+      - "./services/admin-auth/redis:/var/lib/redis"
