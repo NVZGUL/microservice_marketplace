@@ -17,14 +17,15 @@ const ensureAuth = (req, res, next) => {
     }
     return redisDb.findUser(payload.sub)
       .then((response) => {
-        req.pay = response;
-        return next();
+        if (response.success) {
+          req.pay = response;
+          return next();
+        }
+        const error = new Error(response.msg);
+        error.status = 404;
+        return next(error);
       })
-      .catch(() => {
-        return res.status(500).json({
-          status: 'error',
-        });
-      });
+      .catch((error) => { next(error); });
   });
 };
 
