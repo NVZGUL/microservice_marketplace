@@ -2,5 +2,12 @@ sudo: required
 services:
   - docker
 
+before_script:
+  - exort NODE_ENV=test
+  - docker-compose up --build -d
+
 script:
-  - docker-compose run deatil-catalog npm test
+  - docker-compose run details-catalog npm test
+
+after_script:
+  - docker-compose down
