@@ -1,6 +1,6 @@
 const request = require('request-promise');
 
-const ensureAuth = (req, res, next) => {
+let ensureAuth = (req, res, next) => {
   if (!(req.headers && req.headers.authorization)) {
     const err = new Error('Unauthorized');
     err.status = 401;
@@ -23,6 +23,19 @@ const ensureAuth = (req, res, next) => {
     })
     .catch((err) => { next(err); });
 };
+
+if (process.env.NODE_ENV === 'test') {
+  ensureAuth = (req, res, next) => {
+    if (!(req.headers && req.headers.authorization)) {
+      const err = new Error('Unauthorized');
+      err.status = 401;
+      err.description = 'Please Log In';
+      return next(err);
+    }
+    req.user = 1;
+    return next();
+  };
+}
 
 module.exports = {
   ensureAuth,
