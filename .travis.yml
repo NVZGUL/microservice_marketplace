@@ -3,11 +3,11 @@ services:
   - docker
 
 before_script:
-  - exort NODE_ENV=test
-  - docker-compose up --build -d
+  - export NODE_ENV=test
+  - docker-compose -f docker-compose-trav.yml up --build -d
 
 script:
-  - docker-compose run details-catalog npm test
+  - docker-compose -f docker-compose-trav.yml run details-catalog npm test
 
 after_script:
   - docker-compose down
