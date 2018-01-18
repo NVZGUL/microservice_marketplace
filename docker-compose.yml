@@ -8,6 +8,8 @@ services:
       - './services/admin-auth/package.json:/usr/src/package'
     ports:
       - '3000:3000'
+    environment:
+      - NODE_ENV=${NODE_ENV}
     env_file:
       - './env/admin-auth/node.env'
     depends_on:
@@ -37,6 +39,8 @@ services:
     container_name: kz__details-catalog__db
     restart: always
     build: ./services/details-catalog/src/db
+    volumes:
+       - ./postgres:/var/lib/postgresql/data
     ports: 
       - '5433:5432'
     env_file:
@@ -51,6 +55,8 @@ services:
       - './services/admin-auth/package.json:/usr/src/package'
     ports:
       - '3030:3030'
+    environment:
+      - NODE_ENV=${NODE_ENV}
     env_file:
       - './env/details-catalog/node.env'
     depends_on:
