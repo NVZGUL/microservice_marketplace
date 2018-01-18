@@ -9,10 +9,6 @@ const pg = require('../../utils/pg');
 const router = express.Router();
 /* eslint-disable */
 
-router.get('/', (req, res, next) => {
-    return pg('test').test().then(data => res.json(data)).catch(err => next(err));  
-});
-
 // get detail information about parts
 router.get('/:id', (req, res, next) => {
     res.json({msg:'get detail'});
@@ -51,7 +47,7 @@ const checkFileType = (file, cb) => {
   }
 }
 
-router.post('/', routeHelpers.ensureAuth, (req,res) => {
+router.post('/', routeHelpers.ensureAuth, (req,res, next) => {
     upload(req, res, (err) => {
         if (err) {
             res.status(500).json({msg:err});
@@ -64,25 +60,28 @@ router.post('/', routeHelpers.ensureAuth, (req,res) => {
             } else {
                 let file = `public/uploads/${req.file.filename}`
                 let data = xlsx.parse(file)
-                mapToObj(data[0].data.slice(4));
+                let obj = mapToObj(data[0].data);
                 fs.unlinkSync(file);
-                res.status(201).json({
-                    msg: 'File uploaded',
-                    file: `public/uploads/${req.file.filename}`
-                })
+                return pg('details').insertTest(obj)
+                    .then(data => res.status(201).json({ msg: 'File uploaded'}))
+                    .catch(err => next(err));
             }
         }
     });
 })
 
+// {category1: [arr...], category2: [arr...], ...}
 const mapToObj = (arr) => {
     const header = arr[0];
     const data = arr.slice(1);
     let obj = {};
-    [...Array(header.length).keys()].map((i) => {
+    obj.header = arr[0]
+    obj.arr = arr.slice(1)
+    /*
+    for (let i = 0; i < header.length; i++) {
         obj[header[i]] = data.map((x) => x[i])
-    })
-    console.log(obj)
+    }*/
+    //console.log(obj)
     return obj;
 }
 
