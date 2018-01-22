@@ -62,7 +62,7 @@ router.post('/', routeHelpers.ensureAuth, (req,res, next) => {
                 let data = xlsx.parse(file)
                 let obj = mapToObj(data[0].data);
                 fs.unlinkSync(file);
-                return pg('details').insertTest(obj)
+                return pg('details').insert(obj)
                     .then(data => res.status(201).json({ msg: 'File uploaded'}))
                     .catch(err => next(err));
             }
