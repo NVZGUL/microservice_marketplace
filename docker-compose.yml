@@ -65,6 +65,21 @@ services:
     links:
       - details-catalog__db
       - admin-auth
+  market-web:
+    container_name: kz__market-web
+    build: ./services/web-market
+    volumes:
+      - './services/web-market:/usr/src/app'
+      - './services/web-market/package.json:/usr/src/package'
+    ports:
+      - '3050:3050'
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - PORT=3050
+    env_file:
+      - './env/market-web/node.env'
+    links:
+      - details-catalog
   redis:
     container_name: redis__test
     image: redis
