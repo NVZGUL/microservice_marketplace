@@ -56,10 +56,15 @@ const pgDb = (table) => {
         await pool.end();
       }
     },
-    // get all data from the table
-    getAll: async () => {
+    /**
+     * SELECT data from the table
+     * @constructor
+     * @param {Array[String]} fields - array which contains columns names
+     */
+    getData: async (fields) => {
+      const columns = fields.reduce((a, b) => a.concat(',').concat(b));
       try {
-        return await pool.query(`SELECT * FROM ${table}`);
+        return await pool.query(`SELECT ${columns} FROM ${table}`);
       } catch (error) {
         error.status = 400;
         throw error;
@@ -70,7 +75,7 @@ const pgDb = (table) => {
 
     getDetail: async (id) => {
       try {
-        return await pool.query(`SELECT * FROM ${table} WHERE detail_id=${id}`);
+        return await pool.query(`SELECT * FROM ${table} WHERE code=${id}`);
       } catch (error) {
         error.status = 400;
         throw error;
@@ -83,7 +88,7 @@ const pgDb = (table) => {
      * @constructor
      * @param {Object} data - Data must contains two fields arr - insert array, header - columns
      */
-    insertTest: async (data) => {
+    insert: async (data) => {
       const arr = data.arr.reduce((a, b) => a.concat(b));
       /* eslint-disable */
       const values = data.arr
@@ -112,22 +117,11 @@ const pgDb = (table) => {
       }
     },
 
-    select: async () => {
-      try {
-        return await pool.query('SELECT * FROM test');
-      } catch (error) {
-        error.status = 400;
-        throw error;
-      } finally {
-        await pool.end();
-      }
-    },
-
     search: async (param) => {
       const query = `
         SELECT * FROM ${table}
-        WHERE (COLUMN1 LIKE '%${param}%)')
-        OR (COLUMN2 LIKE '%${param}%')
+        WHERE (description LIKE '%${param}%)')
+        OR (category LIKE '%${param}%')
       `;
       try {
         return await pool.query(query);
