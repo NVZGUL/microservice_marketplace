@@ -59,7 +59,7 @@ const pgDb = (table) => {
     /**
      * SELECT data from the table
      * @constructor
-     * @param {Array[String]} fields - array which contains columns names
+     * @param {Array[String]} fields - array of columns names
      */
     getData: async (fields) => {
       const columns = fields.reduce((a, b) => a.concat(',').concat(b));
