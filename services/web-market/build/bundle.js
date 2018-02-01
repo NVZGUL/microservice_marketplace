@@ -100,12 +100,18 @@ var _Page = __webpack_require__(16);
 
 var _Page2 = _interopRequireDefault(_Page);
 
+var _DetailsPage = __webpack_require__(32);
+
+var _DetailsPage2 = _interopRequireDefault(_DetailsPage);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = [_extends({}, _App2.default, {
   routes: [_extends({}, _HomePage2.default, {
     path: '/',
     exact: true
+  }), _extends({}, _DetailsPage2.default, {
+    path: '/details'
   }), _extends({}, _Page2.default)]
 })];
 
@@ -255,9 +261,6 @@ app.get('*', function (req, res) {
   Promise.all(promises).then(function () {
     var context = {};
     var content = (0, _renderer2.default)(req.path, store, context);
-    if (context.url) {
-      res.redirect(301, context.url);
-    }
     if (context.notFound) {
       res.status(404);
     }
@@ -536,10 +539,6 @@ var _reduxThunk = __webpack_require__(21);
 
 var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
-var _axios = __webpack_require__(22);
-
-var _axios2 = _interopRequireDefault(_axios);
-
 var _reducers = __webpack_require__(23);
 
 var _reducers2 = _interopRequireDefault(_reducers);
@@ -576,18 +575,84 @@ Object.defineProperty(exports, "__esModule", {
 
 var _redux = __webpack_require__(6);
 
-var _usersReducer = __webpack_require__(24);
+var _detailsReducer = __webpack_require__(31);
 
-var _usersReducer2 = _interopRequireDefault(_usersReducer);
+var _detailsReducer2 = _interopRequireDefault(_detailsReducer);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = (0, _redux.combineReducers)({
-  users: _usersReducer2.default
+  details: _detailsReducer2.default
 });
 
 /***/ }),
-/* 24 */
+/* 24 */,
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.fetchDetails = exports.FETCH_DETAILS = undefined;
+
+var _axios = __webpack_require__(22);
+
+var _axios2 = _interopRequireDefault(_axios);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+
+var FETCH_DETAILS = exports.FETCH_DETAILS = 'fetch_details';
+var fetchDetails = exports.fetchDetails = function fetchDetails() {
+  return function () {
+    var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(dispatch) {
+      var res;
+      return regeneratorRuntime.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              _context.next = 2;
+              return _axios2.default.get('http://localhost:3030/details');
+
+            case 2:
+              res = _context.sent;
+
+
+              dispatch({
+                type: FETCH_DETAILS,
+                payload: res
+              });
+
+            case 4:
+            case 'end':
+              return _context.stop();
+          }
+        }
+      }, _callee, undefined);
+    }));
+
+    return function (_x) {
+      return _ref.apply(this, arguments);
+    };
+  }();
+};
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports) {
+
+module.exports = require("debug");
+
+/***/ }),
+/* 27 */,
+/* 28 */,
+/* 29 */,
+/* 30 */,
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -604,15 +669,15 @@ exports.default = function () {
   var action = arguments[1];
 
   switch (action.type) {
-    case _actions.FETCH_USERS:
-      return action.payload.data;
+    case _actions.FETCH_DETAILS:
+      return action.payload.data.data;
     default:
       return state;
   }
 };
 
 /***/ }),
-/* 25 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -622,48 +687,80 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var FETCH_USERS = exports.FETCH_USERS = 'fetch_users';
-/* eslint-disable */
-var fetchUsers = exports.fetchUsers = function fetchUsers() {
-  return function () {
-    var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(dispatch, getState, api) {
-      var res;
-      return regeneratorRuntime.wrap(function _callee$(_context) {
-        while (1) {
-          switch (_context.prev = _context.next) {
-            case 0:
-              _context.next = 2;
-              return api.get('/users');
+var _react = __webpack_require__(0);
 
-            case 2:
-              res = _context.sent;
+var _react2 = _interopRequireDefault(_react);
 
-              dispatch({
-                type: FETCH_USERS,
-                payload: res
-              });
+var _reactRedux = __webpack_require__(4);
 
-            case 4:
-            case 'end':
-              return _context.stop();
-          }
-        }
-      }, _callee, undefined);
-    }));
+var _actions = __webpack_require__(25);
 
-    return function (_x, _x2, _x3) {
-      return _ref.apply(this, arguments);
-    };
-  }();
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var DetailsPage = function (_Component) {
+  _inherits(DetailsPage, _Component);
+
+  function DetailsPage() {
+    _classCallCheck(this, DetailsPage);
+
+    return _possibleConstructorReturn(this, (DetailsPage.__proto__ || Object.getPrototypeOf(DetailsPage)).apply(this, arguments));
+  }
+
+  _createClass(DetailsPage, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      this.props.fetchDetails();
+    }
+  }, {
+    key: 'renderDetails',
+    value: function renderDetails() {
+      return this.props.details.map(function (d, i) {
+        return _react2.default.createElement(
+          'li',
+          { key: i },
+          d.code
+        );
+      });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'div',
+        null,
+        'List of details',
+        _react2.default.createElement(
+          'ul',
+          null,
+          this.renderDetails()
+        )
+      );
+    }
+  }]);
+
+  return DetailsPage;
+}(_react.Component);
+
+function mapStateToProps(state) {
+  return { details: state.details };
+}
+
+function loadData(store) {
+  return store.dispatch((0, _actions.fetchDetails)());
+}
+
+exports.default = {
+  loadData: loadData,
+  component: (0, _reactRedux.connect)(mapStateToProps, { fetchDetails: _actions.fetchDetails })(DetailsPage)
 };
-
-/***/ }),
-/* 26 */
-/***/ (function(module, exports) {
-
-module.exports = require("debug");
 
 /***/ })
 /******/ ]);
