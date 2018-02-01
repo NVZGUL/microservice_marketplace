@@ -46,6 +46,12 @@ const checkFileType = (file, cb) => {
     cb("Error: text file only");
   }
 }
+// GET details list
+router.get('/', (req, res, next) => {
+    return pg('details').getData(['code', 'price', 'category', 'description'])
+        .then(data => res.status(200).json({ data: data.rows }))
+        .catch(err => next(err));
+})
 
 router.post('/', routeHelpers.ensureAuth, (req,res, next) => {
     upload(req, res, (err) => {
