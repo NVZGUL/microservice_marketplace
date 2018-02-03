@@ -5,7 +5,7 @@ services:
     build: ./services/admin-auth
     volumes:
       - './services/admin-auth:/usr/src/app'
-      - './services/admin-auth/package.json:/usr/src/package'
+      - './services/admin-auth/package.json:/usr/src/package.json'
     ports:
       - '3000:3000'
     environment:
@@ -52,7 +52,7 @@ services:
     build: ./services/details-catalog
     volumes:
       - './services/details-catalog:/usr/src/app'
-      - './services/admin-auth/package.json:/usr/src/package'
+      - './services/admin-auth/package.json:/usr/src/package.json'
     ports:
       - '3030:3030'
     environment:
@@ -65,12 +65,33 @@ services:
     links:
       - details-catalog__db
       - admin-auth
+  orders__db:
+    container_name: kz__orders__db
+    image: mongo
+    restart: always
+    ports:
+      - '27017:27017'
+    volumes:
+      - './services/orders/db/mongo:/data/db'
+  orders:
+    container_name: kz__orders
+    build: ./services/orders
+    volumes:
+      - './services/orders:/usr/src/app'
+      - './services/orders/package.json:/usr/src/app/package.json'
+    ports:
+      - '3070:3070'
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - PORT=3070
+    links:
+      - orders__db
   market-web:
     container_name: kz__market-web
     build: ./services/web-market
     volumes:
       - './services/web-market:/usr/src/app'
-      - './services/web-market/package.json:/usr/src/package'
+      - './services/web-market/package.json:/usr/src/package.json'
     ports:
       - '3050:3050'
     environment:
