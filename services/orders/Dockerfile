@@ -1,6 +1,6 @@
-FROM node:latest
+FROM node:alpine
 
-RUN mkdir /usr/src/app
+RUN mkdir -p /usr/src/app
 WORKDIR /usr/src
 
 ENV PATH /usr/src/node_modules/.bin:$PATH
